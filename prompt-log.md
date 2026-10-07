@@ -153,3 +153,30 @@
   - เพิ่ม Q-xx: F-13 (AI ไม่ได้ตั้งเลข Q ทีมต้องตั้งเองใน spec)
   - ไม่ใช่ปัญหา: F-10, F-11, F-14
 - ยังไม่ได้แก้โค้ด spec หรือ test ตามที่ตัดสิน ต้องสั่งแยก
+
+---
+
+## 2569-10-07 ทีมสั่ง: แก้เฉพาะ frontend/src/pages/ConfirmBooking.jsx ให้ข้อความและจำนวนตัวเลือกตรงหมวดหน้าจอ (UI) ใน spec และเอาปุ่มยกเลิกการจองออก (Out of scope) ห้ามแก้ test แล้วรัน npm test
+
+- เครื่องมือ: Claude Code (VS Code)
+- อ้างอิง: spec.md หมวด "หน้าจอ (UI)" UI-BKG-02 ต้องตรง: ปุ่ม "ยืนยันการจอง" ข้อความ "ช่วงเวลาเต็ม" (AC-BKG-03) และแสดง 3 ตัวเลือก, mockups/UI-BKG-02-confirm.html
+- สิ่งที่แก้ใน ConfirmBooking.jsx:
+  1. ข้อความแจ้ง "เต็มแล้ว" -> "ช่วงเวลาเต็ม" (AC-BKG-03, UI-BKG-02)
+  2. จำนวนตัวเลือก `.slice(0, 2)` -> `.slice(0, 3)` (FR-BKG-03, UI-BKG-02)
+  3. ลบปุ่ม "ยกเลิกการจอง", ฟังก์ชัน cancel และ state cancelled (อยู่ใน Out of scope UC-02 คอมเมนต์อ้าง FR-BKG-04 ผิดเรื่อง)
+- ไม่ได้แก้ไฟล์ test (AC-BKG-03.test.jsx มีการแก้ค้างอยู่ก่อนแล้ว ไม่ได้มาจาก AI รอบนี้)
+- ผล test: `cd frontend && npm test` 3 passed 1 failed
+  - AC-BKG-03.test.jsx ผ่าน
+  - TC-BKG-01-2.test.jsx ไม่ผ่าน: `TypeError: Cannot read properties of undefined (reading 'slot_date')` test ส่ง prop `slotId` (AI สมมติไว้ตอนยังไม่มีหน้า) แต่หน้าจริงรับ prop `slot` ไม่เกี่ยวกับการแก้รอบนี้ รอทีมตัดสิน
+
+---
+
+## 2569-10-07 09.17 คำสั่ง: /verify specs/001-booking/ (รอบที่ 2 หลังเพิ่มหมวด UI และ mockup)
+
+- เครื่องมือ: Claude Code (VS Code)
+- ไฟล์ที่แก้: specs/001-booking/rtm.md (เขียนใหม่ทั้งไฟล์ คงแถว F-01 ถึง F-14 และช่อง "ทีมตัดสิน" ไว้ทุกตัวอักษร ตรวจด้วย diff แล้ว) ไม่ได้แก้โค้ด test spec plan และ tasks
+- ผล test: หลังบ้าน 7 passed, หน้าจอ 3 passed 1 failed (TC-BKG-01-2.test.jsx: test ส่ง prop slotId แต่หน้าจริงรับ slot)
+- ตารางไปข้างหน้า 15 แถว: ครบ 2, ยังไม่ถึง 5, รอ 0, ช่องโหว่ 8
+- ข้อค้นพบเดิม F-01 ถึง F-14 ยังเจออยู่ทุกข้อ (backend/app ไม่เปลี่ยนตั้งแต่ verify v1)
+- ข้อค้นพบใหม่: F-15 ถึง F-23 (ช่อง "ทีมตัดสิน" ว่างไว้)
+- ไม่มี specs/000-shared/ และ plan.md ไม่มีตาราง "ค่าที่ตั้งได้"
